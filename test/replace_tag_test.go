@@ -198,7 +198,7 @@ func TestUpdateConfigFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for i, _ := range newContent {
+	for i := range newContent {
 		if newContent[i] != content[i] {
 			t.Fatalf("Phrease %v: Got %v, but expected %v", i, string(newContent[i]), string(content[i]))
 		}
