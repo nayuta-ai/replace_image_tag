@@ -1,7 +1,8 @@
-package main
+package replace
 
 import (
 	"flag"
+	"log"
 	"os"
 )
 
@@ -21,6 +22,7 @@ var (
 func init() {
 	tag = flag.String("tag", "latest", "a tag of the docker image")
 	token = flag.String("token", "", "a personal github token for the owner")
+	log.Printf("tag: %v, token: %v", tag, token)
 }
 
 func main() {

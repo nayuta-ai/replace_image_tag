@@ -1,4 +1,4 @@
-package main
+package replace
 
 import (
 	"context"
@@ -16,7 +16,7 @@ func replaceTags(tag, token *string) int {
 		fmt.Println("input error: a personal access token does not exist")
 		return 1
 	}
-	client := newAuthenticatedGitHubClient(token)
+	client := NewAuthenticatedGitHubClient(token)
 	// Specify the repository, new branch name and the SHA of the commit you want the branch to point to
 	newBranchName := "update_tag"
 
@@ -39,7 +39,7 @@ func replaceTags(tag, token *string) int {
 	return 0
 }
 
-func newAuthenticatedGitHubClient(token *string) *github.Client {
+func NewAuthenticatedGitHubClient(token *string) *github.Client {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: *token},
