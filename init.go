@@ -1,17 +1,13 @@
-package replace
+package main
 
 import (
+	replace "app/src"
 	"flag"
+	"fmt"
 	"log"
 	"os"
-)
 
-const (
-	image      = "yuta42173/ubuntu"
-	owner      = "nayuta-ai"
-	repo       = "k8s-argo"
-	mainBranch = "main"
-	filePath   = "dev/deployment.yaml"
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -27,5 +23,12 @@ func init() {
 
 func main() {
 	flag.Parse()
-	os.Exit(replaceTags(tag, token))
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	tmp := os.Getenv("GITHUB_TOKEN")
+	token = &tmp
+	os.Exit(replace.ReplaceTags(tag, token))
 }

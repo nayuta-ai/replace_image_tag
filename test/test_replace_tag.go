@@ -1,4 +1,4 @@
-package replace
+package test
 
 import (
 	"context"
@@ -6,76 +6,22 @@ import (
 	"fmt"
 
 	"github.com/google/go-github/v49/github"
-	"golang.org/x/oauth2"
 	yaml "gopkg.in/yaml.v2"
 )
 
-type GitHubInterface interface {
-	FetchBranch(string, string) (*github.Reference, error)
-	NewBranch(string, string) (*github.Reference, error)
-	UpdateConfigFile() (*github.RepositoryContent, []byte, error)
-	NewPullRequest([]byte, *string, string) error
-}
-
-type Client struct {
-	Model GitHubInterface
-}
-
-type Config struct {
+type TestConfig struct {
 	client *github.Client
 }
 
 const (
-	image      = "yuta42173/ubuntu"
+	image      = "yuta42173/ubuntu:latest"
 	owner      = "nayuta-ai"
 	repo       = "k8s-argo"
 	mainBranch = "main"
 	filePath   = "dev/deployment.yaml"
 )
 
-func ReplaceTags(tag, token *string) int {
-	if *token == "" {
-		fmt.Println("input error: a personal access token does not exist")
-		return 1
-	}
-	client := NewAuthenticatedGitHubClient(token)
-
-	c := Client{
-		Model: &Config{client: client},
-	}
-	// Specify the repository, new branch name and the SHA of the commit you want the branch to point to
-	newBranchName := "update_tag"
-
-	_, err := c.Model.FetchBranch(mainBranch, newBranchName)
-	if err != nil {
-		fmt.Println(err)
-		return 1
-	}
-
-	fileContent, newContent, err := c.Model.UpdateConfigFile()
-	if err != nil {
-		fmt.Println(err)
-		return 1
-	}
-	err = c.Model.NewPullRequest(newContent, fileContent.SHA, newBranchName)
-	if err != nil {
-		fmt.Println(err)
-		return 1
-	}
-	return 0
-}
-
-func NewAuthenticatedGitHubClient(token *string) *github.Client {
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: *token},
-	)
-	tc := oauth2.NewClient(ctx, ts)
-
-	return github.NewClient(tc)
-}
-
-func (c *Config) FetchBranch(mainBranchName string, newBranchName string) (*github.Reference, error) {
+func (c *TestConfig) FetchBranch(mainBranchName string, newBranchName string) (*github.Reference, error) {
 	ref, rsp, err := c.client.Git.GetRef(context.Background(), owner, repo, "heads/"+newBranchName)
 	if err != nil {
 		if rsp.Response.StatusCode == 404 {
@@ -94,7 +40,7 @@ func (c *Config) FetchBranch(mainBranchName string, newBranchName string) (*gith
 	return ref, nil
 }
 
-func (c *Config) NewBranch(mainBranchName string, newBranchName string) (*github.Reference, error) {
+func (c *TestConfig) NewBranch(mainBranchName string, newBranchName string) (*github.Reference, error) {
 	// Get the main branch
 	branchInfo, _, err := c.client.Repositories.GetBranch(context.Background(), owner, repo, mainBranchName, false)
 	if err != nil {
@@ -120,7 +66,7 @@ func (c *Config) NewBranch(mainBranchName string, newBranchName string) (*github
 	return ref, nil
 }
 
-func (c *Config) UpdateConfigFile() (*github.RepositoryContent, []byte, error) {
+func (c *TestConfig) UpdateConfigFile() (*github.RepositoryContent, []byte, error) {
 	// Get the contents of the file
 	fileContent, _, _, err := c.client.Repositories.GetContents(context.Background(), owner, repo, filePath, nil)
 	if err != nil {
@@ -147,8 +93,8 @@ func (c *Config) UpdateConfigFile() (*github.RepositoryContent, []byte, error) {
 	return fileContent, newContent, nil
 }
 
-func (c *Config) NewPullRequest(newContent []byte, sha *string, newBranch string) error {
-	commitMessage := "Update deployment configuration"
+func (c *TestConfig) NewPullRequest(newContent []byte, sha *string, newBranch string) error {
+	commitMessage := "Update deployment TestConfiguration"
 	// Create a new file commit
 	newCommit := &github.RepositoryContentFileOptions{
 		Message: &commitMessage,
