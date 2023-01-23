@@ -26,20 +26,21 @@ type Config struct {
 }
 
 const (
-	image      = "yuta42173/ubuntu:latest"
 	owner      = "nayuta-ai"
 	repo       = "k8s-argo"
 	mainBranch = "main"
 	filePath   = "dev/deployment.yaml"
 )
 
+var imageName  = "yuta42173/ubuntu:"
+
 func ReplaceTags(tag, token *string) int {
+	imageName += *tag
 	if *token == "" {
 		fmt.Println("input error: a personal access token does not exist")
 		return 1
 	}
 	client := NewAuthenticatedGitHubClient(token)
-
 	c := Client{
 		Model: &Config{client: client},
 	}
@@ -138,7 +139,7 @@ func (c *Config) UpdateConfigFile() (*github.RepositoryContent, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	yamlObj.(map[interface{}]interface{})["spec"].(map[interface{}]interface{})["template"].(map[interface{}]interface{})["spec"].(map[interface{}]interface{})["containers"].([]interface{})[0].(map[interface{}]interface{})["image"] = image
+	yamlObj.(map[interface{}]interface{})["spec"].(map[interface{}]interface{})["template"].(map[interface{}]interface{})["spec"].(map[interface{}]interface{})["containers"].([]interface{})[0].(map[interface{}]interface{})["image"] = imageName
 	//Marshal struct to yaml
 	newContent, err := yaml.Marshal(&yamlObj)
 	if err != nil {
