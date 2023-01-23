@@ -26,7 +26,7 @@ type Config struct {
 }
 
 const (
-	image      = "yuta42173/ubuntu"
+	image      = "yuta42173/ubuntu:latest"
 	owner      = "nayuta-ai"
 	repo       = "k8s-argo"
 	mainBranch = "main"

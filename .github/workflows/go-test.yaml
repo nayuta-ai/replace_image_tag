@@ -1,5 +1,11 @@
 name: Go package
 on: [push]
+env:
+  GITHUB_TOKEN: ${{ secrets.TOKEN }}
+  GITHUB_USER: nayuta-ai
+  GITHUB_REPOSITORY: k8s-argo
+  GITHUB_BRANCH: update_tag
+  TEST_VARIABLE: test
 jobs:
   build:
     runs-on: ubuntu-latest
