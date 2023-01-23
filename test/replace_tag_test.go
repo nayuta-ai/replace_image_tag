@@ -36,7 +36,7 @@ func TestNewAuthenticatedGitHubClient(t *testing.T) {
 				t.Fatalf("type error: Got %v, but expected *github.Client", kind)
 			}
 			// Fetch GitHub branch information using client variable.
-			_, _, err := client.Git.GetRef(context.Background(), os.Getenv("GITHUB_USER"), os.Getenv("GITHUB_REPOSITORY"), "heads/"+os.Getenv("GITHUB_BRANCH"))
+			_, _, err := client.Git.GetRef(context.Background(), os.Getenv("GITHUB_USER"), os.Getenv("TARGET_REPOSITORY"), "heads/"+os.Getenv("GITHUB_BRANCH"))
 			switch tt.name {
 			case "wrong case":
 				// In this case, tt.token is invalid token, so err must be empty error.
